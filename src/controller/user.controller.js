@@ -6,6 +6,18 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 
 
+const generateAccessAndRefreshTokens=async(userId)=>{
+  try{
+    const user=await User.findById(userId)
+    const accessToken=user.generateAccessToken()
+    const refreshToken=user.generateRefreshToken()
+
+
+  }catch(error){
+    throw new ApiError(500,"Something went wrong while generating token")
+  }
+}
+
 const registerUser=asyncHandler(async(req,res)=>{
     
     // get user details from frontend
@@ -90,6 +102,26 @@ const loginUser=asyncHandler(async(req,res)=>{
       //send cookies
 
       const {email,username,password}=req.body
+
+      if(!username || !email){
+        throw new ApiError(400,"username or password is requied")
+      }
+
+      const user=await User.findOne({
+        $or:[{username},{email}]
+      })
+
+      if(!user){
+        throw new ApiError(404,"User doesn't exist")
+      }
+
+      const isPasswordValid=await user.isPasswordCorrect(password)
+
+      if(!isPasswordValid){
+        throw new ApiError(401,"Invalid user credentials ")
+      }
+
+
 })
 
 export {registerUser,loginUser}
