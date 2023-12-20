@@ -7,9 +7,16 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 
 
 const registerUser=asyncHandler(async(req,res)=>{
-    // res.status(200).json({
-    //   messgae:"ok"
-    // })
+    
+    // get user details from frontend
+    // validation - not empty
+    // check if user already exists: username, email
+    // check for images, check for avatar
+    // upload them to cloudinary, avatar
+    // create user object - create entry in db
+    // remove password and refresh token field from response
+    // check for user creation
+    // return res
 
     const {fullName,email,username,password}= req.body
     console.log("email",email)
@@ -50,7 +57,7 @@ const registerUser=asyncHandler(async(req,res)=>{
 
     if(!avatar){
       throw new ApiError(400,"Avatar file is required")
-    }
+    } 
 
     const user=await User.create({
       fullName,
@@ -74,4 +81,15 @@ const registerUser=asyncHandler(async(req,res)=>{
     )
 })
 
-export {registerUser}
+const loginUser=asyncHandler(async(req,res)=>{
+      //req body ->data
+      //username or email
+      //find the user
+      //password check
+      //access and refresh token
+      //send cookies
+
+      const {email,username,password}=req.body
+})
+
+export {registerUser,loginUser}
