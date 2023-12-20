@@ -12,6 +12,10 @@ const generateAccessAndRefreshTokens=async(userId)=>{
     const accessToken=user.generateAccessToken()
     const refreshToken=user.generateRefreshToken()
 
+     user.refreshToken=refreshToken
+     await user.save({validateBeforeSave:false})
+
+     return {accessToken,refreshToken}
 
   }catch(error){
     throw new ApiError(500,"Something went wrong while generating token")
@@ -121,7 +125,30 @@ const loginUser=asyncHandler(async(req,res)=>{
         throw new ApiError(401,"Invalid user credentials ")
       }
 
+      const {accessToken,refreshToken}= await generateAccessAndRefreshTokens(user._id)
 
+      const loggedInUser= await User.findById(user._id).select("-password -refreshToken")
+
+      const options={
+        httpOnly:true,
+        secure:true
+      }
+       return res.status(200)
+       .cookie("accessToken",accessToken,options)
+       .cookie("refreshToken",refreshToken,options)
+       .json(
+         new ApiError(
+          200,
+          {
+            user:loggedInUser,accessToken,refreshToken
+          },
+          "User logged In Successfully"
+         )
+       )
 })
+
+   const logoutUser=asyncHandler(async(req,res)=>{
+     
+   })
 
 export {registerUser,loginUser}
