@@ -23,6 +23,22 @@ const generateAccessAndRefreshTokens=async(userId)=>{
   }
 }
 
+const getVideo=async(req,res)=>{
+    try{
+        const {userId}=req.body
+        const vidresponse=await Video.find({
+          where : { owner: userId }
+        })
+        return res.status(201).json(
+          new ApiResponse(200,vidresponse,"User video fetched")
+        )
+
+    }catch(error){
+      console.log(error)
+      throw new ApiError(500," Video not fetched ")
+    }
+}
+
 const registerUser=asyncHandler(async(req,res)=>{
     
     // get user details from frontend
@@ -437,6 +453,6 @@ const getWatchHistory = asyncHandler(async(req, res) => {
 })
 
 
-export {registerUser,loginUser,logoutUser,refreshAccessToken,
+export {registerUser,loginUser,logoutUser,refreshAccessToken,getVideo,
   changeCurrentPassword,getCurrentUser,updateAccountDetails,
   updateUserAvatar,updateUserCoverImage,getUserChannelProfile,getWatchHistory}
